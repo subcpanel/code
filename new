@@ -1,0 +1,126 @@
+<?php
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $reg_no = $_POST['reg_no'];
+    $exm_code = $_POST['exm_code'];
+    $exam_year = $_POST['exam_year'];
+
+    $url = "http://results.nu.ac.bd/results_latest/result_show.php?reg_no=" . urlencode($reg_no) . "&exm_code=" . urlencode($exm_code) . "&exam_year=" . urlencode($exam_year);
+
+    $result = file_get_contents($url);
+
+    if ($result === FALSE) {
+        $output = "Error fetching result.";
+    } else {
+        $output = $result; // Directly output the result
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NATIONAL UNIVERSITY</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" type="text/css" href="css/table_style.css">
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        input[type="text"] {
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        input[type="submit"] {
+            padding: 10px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #218838;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+        }
+        .hidden {
+            display: none;
+        }
+        .tble {
+            margin: 0;
+            font-size: 13px;
+            line-height: 14px;
+            letter-spacing: .2px;
+            color: #000;
+        }
+        .tble img {
+            height: 65px;
+            width: auto;
+        }
+        .tble table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .tble th, .tble td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        .tble th {
+            background-color: #f2f2f2;
+            text-align: center;
+        }
+    </style>
+    <script>
+        function showForm() {
+            document.getElementById('resultForm').classList.remove('hidden');
+            document.getElementById('resultOutput').classList.add('hidden');
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Check Your Result</h2>
+        <div id="resultForm" class="<?php if (isset($output)) echo 'hidden'; ?>">
+            <form method="post" action="<?php echo $_SERVER['PHP_SELF'];?>">
+                Registration Number: <input type="text" name="reg_no" required><br>
+                Exam Code: <input type="text" name="exm_code" required><br>
+                Exam Year: <input type="text" name="exam_year" required><br>
+                <input type="submit" value="Check Result">
+            </form>
+        </div>
+        <div id="resultOutput" class="<?php if (!isset($output)) echo 'hidden'; ?>">
+            <?php if (isset($output)) echo "<div class='result tble'>$output</div>"; ?>
+            <button onclick="showForm()">Search Another Result</button>
+        </div>
+    </div>
+</body>
+</html>
